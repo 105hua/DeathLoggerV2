@@ -1,0 +1,5 @@
+name: DeathLogger
+version: '${project.version}'
+main: com.nearvanilla.deathlogger.DeathLogger
+api-version: 1.19
+description: A plugin which logs deaths!
