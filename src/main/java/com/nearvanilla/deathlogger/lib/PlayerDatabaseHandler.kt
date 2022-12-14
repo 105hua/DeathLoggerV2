@@ -2,7 +2,9 @@ package com.nearvanilla.deathlogger.lib // Package name.
 
 // Imports.
 import com.nearvanilla.deathlogger.DeathLogger
+import com.nearvanilla.deathlogger.commands.InvCallback
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.entity.Player
@@ -103,11 +105,45 @@ class PlayerDatabaseHandler {
 
                 player.sendMessage(listComponent) // Send list component to player as message.
 
+                var rowCount = 1
+
                 while(result.next()){ // Enter while loop to iterate through results.
 
                     // Get variables from result.
                     val deathCoords = result.getString(1) // Get death coords from result.
                     val worldName = result.getString(2) // Get world name from result.
+                    val encodedInv = result.getString(3) // Get encoded inventory from result.
+
+                    if(encodedInv == null){ // If encoded inventory is null.
+
+                        val invalidInvComponent = Component.text("DeathLogger couldn't find an inventory base for this result.", NamedTextColor.RED, TextDecoration.BOLD) // Make error component for inventory base.
+                        player.sendMessage(invalidInvComponent) // Send invalid inv component.
+                        return // Return, ending here.
+
+                    } // Closing of if statement.
+
+                    if(worldName == null){ // If world name is null.
+
+                        val invalidWorldComponent = Component.text("DeathLogger couldn't find a world name for this result.", NamedTextColor.RED, TextDecoration.BOLD) // Make error component for world name.
+                        player.sendMessage(invalidWorldComponent) // Send invalid world component.
+                        return
+
+                    } // Closing of if statement.
+
+                    if(deathCoords == null){ // If death coordinates are null.
+
+                        val invalidCoordsComponent = Component.text("DeathLogger couldn't find any coordinates for this result.", NamedTextColor.RED, TextDecoration.BOLD) // Make error component for coordinates.
+                        player.sendMessage(invalidCoordsComponent) // Send invalid coords component.
+
+                    } // Closing of if statement.
+
+                    /*
+
+                    Main component setup.
+
+                     */
+
+                    val dataComponent = Component.text("${rowCount} | ")
 
                     /*
 
@@ -120,9 +156,22 @@ class PlayerDatabaseHandler {
 
                     if(player.hasPermission("deathlogger.mod")){
 
-                        TODO("Add click events if player is moderator.")
+                        // TODO("Add click events if player is moderator.")
 
-                    }
+                        // Probably unstable code ngl.
+
+                        val clickEvent = ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "execute in ${worldName} run tp @s ${formattedCoords[0]} ${formattedCoords[1]} ${formattedCoords[2]}") // Make click event to tp to coords.
+                        coordsComponent.clickEvent(clickEvent) // Set coords component click event to click event we just made.
+
+                    } // Closing of if statement.
+
+                    dataComponent.append(coordsComponent)
+
+                    /*
+
+
+
+                     */
 
                     count++ // Increment count.
 
